@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
-import { AgentLog } from '../../../models/AgentLog';
-import { connectDB } from '../../../lib/db';
+import { AgentLog } from '@/src/models/AgentLog';
+import { connectDB } from '@/src/lib/db';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
