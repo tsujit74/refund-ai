@@ -17,36 +17,36 @@ const statItems = [
     key: 'totalCustomers',
     label: 'Customers',
     icon: '👥',
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10',
+    color: 'text-blue-600',
+    bg: 'bg-blue-50',
   },
   {
     key: 'totalOrders',
     label: 'Orders',
     icon: '📦',
-    color: 'text-violet-400',
-    bg: 'bg-violet-500/10',
+    color: 'text-violet-600',
+    bg: 'bg-violet-50',
   },
   {
     key: 'refundRequests',
     label: 'Refund Requests',
     icon: '↩',
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10',
+    color: 'text-amber-600',
+    bg: 'bg-amber-50',
   },
   {
     key: 'approvedRefunds',
     label: 'Approved',
     icon: '✓',
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
+    color: 'text-emerald-600',
+    bg: 'emerald-50',
   },
   {
     key: 'deniedRefunds',
     label: 'Denied',
     icon: '×',
-    color: 'text-red-400',
-    bg: 'bg-red-500/10',
+    color: 'text-red-600',
+    bg: 'bg-red-50',
   },
 ] as const;
 
@@ -56,23 +56,25 @@ export function Stats({ stats }: StatsProps) {
       {statItems.map((item) => (
         <div
           key={item.key}
-          className="group rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 shadow-lg shadow-black/5 transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-700 hover:bg-zinc-900"
+          className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md"
         >
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-zinc-400">
+              <p className="text-sm font-medium text-gray-500">
                 {item.label}
               </p>
 
-              <p className="mt-2 text-3xl font-semibold tracking-tight text-white">
+              <p className="mt-2 text-3xl font-semibold text-gray-900">
                 {stats[item.key]}
               </p>
             </div>
 
             <div
-              className={`flex h-10 w-10 items-center justify-center rounded-xl ${item.bg} ${item.color}`}
+              className={`flex h-11 w-11 items-center justify-center rounded-xl ${item.bg} ${item.color}`}
             >
-              <span className="text-lg font-semibold">{item.icon}</span>
+              <span className="text-lg font-semibold">
+                {item.icon}
+              </span>
             </div>
           </div>
         </div>

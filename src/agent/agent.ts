@@ -1,4 +1,3 @@
-
 import OpenAI from "openai";
 import { openai } from "../lib/llm";
 import { getSystemPrompt } from "./prompts";
@@ -20,7 +19,7 @@ export interface AgentResponse {
 
 export async function runAgent(
   userMessage: string,
-  customerEmail?: string
+  customerEmail?: string,
 ): Promise<AgentResponse> {
   const sessionId = generateSessionId();
 
@@ -58,24 +57,6 @@ export async function runAgent(
     while (iteration < MAX_ITERATIONS) {
       iteration++;
 
-      console.log(`\n🔄 ITERATION ${iteration}/${MAX_ITERATIONS}`);
-
-      // --------------------------------------------------
-      // DEBUG: OpenAI configuration
-      // --------------------------------------------------
-
-      console.log("🔵 Calling OpenAI...");
-      console.log("Model: gpt-4o-mini");
-      console.log("Messages:", messages.length);
-      console.log(
-        "Tools:",
-        toolDefinitions.map((tool) => tool.function.name)
-      );
-
-      // --------------------------------------------------
-      // OpenAI request
-      // --------------------------------------------------
-
       let response;
 
       try {
@@ -101,17 +82,6 @@ export async function runAgent(
         throw error;
       }
 
-      // --------------------------------------------------
-      // DEBUG: OpenAI response
-      // --------------------------------------------------
-
-      console.log("Response ID:", response.id);
-      console.log("Choices:", response.choices.length);
-      console.log(
-        "Finish reason:",
-        response.choices[0]?.finish_reason
-      );
-
       const assistantMessage = response.choices[0]?.message;
 
       if (!assistantMessage) {
@@ -120,65 +90,114 @@ export async function runAgent(
 
       console.log(
         "Assistant content:",
-        assistantMessage.content || "(no text)"
+        assistantMessage.content || "(no text)",
       );
 
-      console.log(
-        "Tool calls:",
-        assistantMessage.tool_calls?.length || 0
-      );
+      console.log("Tool calls:", assistantMessage.tool_calls?.length || 0);
 
       messages.push(assistantMessage);
-
-      // --------------------------------------------------
-      // Tool calls
-      // --------------------------------------------------
 
       if (
         assistantMessage.tool_calls &&
         assistantMessage.tool_calls.length > 0
       ) {
         console.log("\n🛠️ TOOL CALLS DETECTED");
+        if (
+          assistantMessage.tool_calls &&
+          assistantMessage.tool_calls.length > 0
+        ) {
+          console.log("\n🛠️ TOOL CALLS DETECTED");
 
-        await AgentLog.create({
-          sessionId,
-          type: "INTENT_IDENTIFIED",
-          output: {
-            tools: assistantMessage.tool_calls.map(
-              (toolCall) => toolCall.function.name
-            ),
-          },
-          status: "COMPLETED",
-        });
+          await AgentLog.create({
+            sessionId,
+            type: "INTENT_IDENTIFIED",
+            output: {
+              tools: assistantMessage.tool_calls
+                .filter((toolCall) => "function" in toolCall)
+                .map((toolCall) => toolCall.function.name),
+            },
+            status: "COMPLETED",
+          });
+
+          for (const toolCall of assistantMessage.tool_calls) {
+            // We only support function-based tools in this agent.
+            if (!("function" in toolCall)) {
+              continue;
+            }
+
+            const toolName = toolCall.function.name;
+
+            let toolArgs: Record<string, unknown>;
+
+            try {
+              toolArgs = JSON.parse(toolCall.function.arguments || "{}");
+            } catch {
+              toolArgs = {};
+            }
+
+            try {
+              const toolResult = await executeTool(
+                toolName,
+                toolArgs,
+                sessionId,
+              );
+
+              messages.push({
+                role: "tool",
+                tool_call_id: toolCall.id,
+                content: JSON.stringify(toolResult),
+              });
+            } catch (error) {
+              const errorMessage =
+                error instanceof Error
+                  ? error.message
+                  : "Tool execution failed";
+
+              await AgentLog.create({
+                sessionId,
+                type: "ERROR",
+                tool: toolName,
+                input: toolArgs,
+                output: {
+                  error: errorMessage,
+                },
+                status: "FAILED",
+              });
+
+              messages.push({
+                role: "tool",
+                tool_call_id: toolCall.id,
+                content: JSON.stringify({
+                  success: false,
+                  error: errorMessage,
+                }),
+              });
+            }
+          }
+
+          console.log("➡️ Sending tool results back to OpenAI...");
+
+          continue;
+        }
 
         for (const toolCall of assistantMessage.tool_calls) {
-          const toolName = toolCall.function.name;
+          // We only support function-based tools in this agent.
+          if (!("function" in toolCall)) {
+            continue;
+          }
 
-          console.log(`\n🔧 Executing tool: ${toolName}`);
+          const toolName = toolCall.function.name;
 
           let toolArgs: Record<string, unknown>;
 
           try {
-            toolArgs = JSON.parse(toolCall.function.arguments);
-
-            console.log("Tool arguments:", toolArgs);
-          } catch (error) {
-            console.error(
-              "❌ Failed to parse tool arguments:",
-              toolCall.function.arguments
-            );
-
+            toolArgs = JSON.parse(toolCall.function.arguments || "{}");
+          } catch {
             toolArgs = {};
           }
 
           try {
-            const toolResult = await executeTool(
-              toolName,
-              toolArgs,
-              sessionId
-            );
-
-            console.log("🟢 Tool result:", toolResult);
+            const toolResult = await executeTool(toolName, toolArgs, sessionId);
 
             messages.push({
               role: "tool",
@@ -187,12 +206,7 @@ export async function runAgent(
             });
           } catch (error) {
             const errorMessage =
-              error instanceof Error
-                ? error.message
-                : "Tool execution failed";
-
-            console.error(`🔴 Tool failed: ${toolName}`);
-            console.error("Error:", errorMessage);
+              error instanceof Error ? error.message : "Tool execution failed";
 
             await AgentLog.create({
               sessionId,
@@ -221,10 +235,6 @@ export async function runAgent(
         continue;
       }
 
-      // --------------------------------------------------
-      // Final response
-      // --------------------------------------------------
-
       const finalResponse =
         assistantMessage.content ||
         "I couldn't process your request. Please try again.";
@@ -246,15 +256,11 @@ export async function runAgent(
         messages: messages
           .filter(
             (message) =>
-              message.role === "user" ||
-              message.role === "assistant"
+              message.role === "user" || message.role === "assistant",
           )
           .map((message) => ({
             role: message.role as "user" | "assistant",
-            content:
-              typeof message.content === "string"
-                ? message.content
-                : "",
+            content: typeof message.content === "string" ? message.content : "",
           })),
         success: true,
       };
@@ -284,9 +290,7 @@ export async function runAgent(
     };
   } catch (error) {
     const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Unexpected agent error";
+      error instanceof Error ? error.message : "Unexpected agent error";
 
     console.error("\n========================================");
     console.error("🔴 AGENT FAILED");
