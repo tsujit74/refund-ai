@@ -1,11 +1,12 @@
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-if (!OPENAI_API_KEY) {
-  throw new Error('Please define the OPENAI_API_KEY environment variable');
+if (!GROQ_API_KEY) {
+  throw new Error("Please define the GROQ_API_KEY environment variable");
 }
 
 export const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
+  apiKey: GROQ_API_KEY,
+  baseURL: "https://api.groq.com/openai/v1",
 });
