@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
     "mongoose": "^9.9.2",
     "next": "16.3.1",
     "openai": "^7.4.0",
@@ -24,6 +26,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

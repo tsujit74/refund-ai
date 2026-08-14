@@ -1,9 +1,12 @@
-import mongoose from 'mongoose';
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+dotenv.config({ path: ".env.local" });
+
+const MONGODB_URI = process.env.MONGODB_URI || "";
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
+  throw new Error("Please define the MONGODB_URI environment variable");
 }
 
 interface MongooseCache {
@@ -15,7 +18,10 @@ declare global {
   var mongoose: MongooseCache | undefined;
 }
 
-const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
+const cached: MongooseCache = global.mongoose || {
+  conn: null,
+  promise: null,
+};
 
 if (!global.mongoose) {
   global.mongoose = cached;
@@ -28,11 +34,12 @@ export async function connectDB() {
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => {
-      console.log('✓ Connected to MongoDB');
+      console.log("✓ Connected to MongoDB");
       return mongoose;
     });
   }
 
   cached.conn = await cached.promise;
+
   return cached.conn;
 }
