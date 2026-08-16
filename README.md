@@ -772,7 +772,7 @@ The demo walkthrough covers:
 ### Demo Video
 
 **Loom / Google Drive:**
-`ADD_YOUR_VIDEO_LINK_HERE`
+`https://www.loom.com/share/995d43ed237c40efa3265a80cf3db420`
 
 ---
 
@@ -780,15 +780,15 @@ The demo walkthrough covers:
 
 ### GitHub
 
-`ADD_YOUR_GITHUB_REPOSITORY_LINK_HERE`
+`https://github.com/tsujit74/refund-ai`
 
 ### Live Demo
 
-`ADD_YOUR_DEPLOYED_URL_HERE`
+`https://refund-ai-psi.vercel.app/`
 
 ### Demo Video
 
-`ADD_YOUR_LOOM_OR_GOOGLE_DRIVE_LINK_HERE`
+`https://www.loom.com/share/995d43ed237c40efa3265a80cf3db420`
 
 ---
 
