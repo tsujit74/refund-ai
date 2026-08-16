@@ -1,4 +1,4 @@
-import { Order, IOrder } from '../models/Order';
+import { Order } from '../models/Order';
 import { RefundValidationResult } from '../types';
 
 

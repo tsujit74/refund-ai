@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Order, IOrder } from '../models/Order';
+import { Order} from '../models/Order';
 import { AgentLog } from '../models/AgentLog';
 
 // Input validation schema
