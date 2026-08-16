@@ -10,6 +10,7 @@ RefundAI simulates an e-commerce customer support system where an AI agent can u
 The project was built as a **vertical slice assignment for a Next.js Developer role**, focusing on agent orchestration, tool calling, business-rule validation, observability, and a clean user interface.
 
 ---
+---
 
 # 🔗 Links
 
@@ -24,6 +25,8 @@ The project was built as a **vertical slice assignment for a Next.js Developer r
 ### Demo Video
 
 `https://www.loom.com/share/995d43ed237c40efa3265a80cf3db420`
+
+---
 
 ## 🚀 Features
 
