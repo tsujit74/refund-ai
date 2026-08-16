@@ -9,25 +9,6 @@ RefundAI simulates an e-commerce customer support system where an AI agent can u
 
 The project was built as a **vertical slice assignment for a Next.js Developer role**, focusing on agent orchestration, tool calling, business-rule validation, observability, and a clean user interface.
 
-
----
-
-# 🔗 Links
-
-### GitHub
-
-`https://github.com/tsujit74/refund-ai`
-
-### Live Demo
-
-`https://refund-ai-psi.vercel.app/`
-
-### Demo Video
-
-`https://www.loom.com/share/995d43ed237c40efa3265a80cf3db420`
-
----
-
 ---
 
 ## 🚀 Features
