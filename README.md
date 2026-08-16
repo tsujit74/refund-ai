@@ -11,6 +11,20 @@ The project was built as a **vertical slice assignment for a Next.js Developer r
 
 ---
 
+# 🔗 Links
+
+### GitHub
+
+`https://github.com/tsujit74/refund-ai`
+
+### Live Demo
+
+`https://refund-ai-psi.vercel.app/`
+
+### Demo Video
+
+`https://www.loom.com/share/995d43ed237c40efa3265a80cf3db420`
+
 ## 🚀 Features
 
 ### 👤 Customer Support Chat
